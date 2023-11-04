@@ -7,9 +7,10 @@ let extension;
 let email;
 let department;
 let form;
-let employees;
+let employees = document.getElementById('employees');
 let row;
 let empCounter = 0;
+let deleteBtn;
 
 // HELPER FUNCTION TO RETURN DOM ELEMENT
 const $ = (id) => document.getElementById(id)
@@ -33,12 +34,15 @@ form.addEventListener('submit', (e) => {
     // SET FOCUS BACK TO THE ID TEXT BOX
     employeeId.focus();
     // INCREMENT THE NUMBER OF EMPLOYEES IN THE TABLE
-    let empElement = $('empCount')
-    empElement.innerText = `(${empCounter})`;
+    updateCounter();
 })
 
+function updateCounter() {
+    let empElement = $('empCount')
+    empElement.innerText = `(${empCounter})`;
+}
+
 function addRow(employeeId, fullName, extension, email, department) {
-    employees = $('employees')
     row = employees.insertRow();
     // INSERT A CELL FOR EACH ITEM WITHIN THE NEW ROW
     let idCell = row.insertCell(0);
@@ -47,6 +51,7 @@ function addRow(employeeId, fullName, extension, email, department) {
     let emailCell = row.insertCell(3);
     let depCell = row.insertCell(4);
     let deleteBtnCell = row.insertCell(5);
+
     // APPEND THE TEXT VALUES AS TEXT NODES WITHIN THE CELLS
     let idText = document.createTextNode(employeeId.value);
     let nameText = document.createTextNode(fullName.value);
@@ -58,12 +63,17 @@ function addRow(employeeId, fullName, extension, email, department) {
     extCell.appendChild(extText);
     emailCell.appendChild(emailText);
     depCell.appendChild(depText);
+
     // CREATE THE DELETE BUTTON
-    let deleteBtn = document.createElement('button')
+    deleteBtn = document.createElement('button')
+
     // ADD BOOTSTRAP CLASSES FOR A BUTTON
     deleteBtn.className = 'btn btn-danger btn-sm float-end delete'
+    deleteBtn.setAttribute('onclick', 'deleteRow(this)');
+
     // CREATE TEXT NODE FOR DELETE BUTTON AND SET IT TO 'X'
     let textDelete = document.createTextNode('X')
+
     // APPEND TEXT NODE TO DELETE BUTTON
     deleteBtn.appendChild(textDelete)
     depCell.appendChild(deleteBtn)
@@ -71,17 +81,12 @@ function addRow(employeeId, fullName, extension, email, department) {
 }
 
 // DELETE EMPLOYEE
-
-// HANDLE THE CLICK EVENT OF THE DELETE BUTTON
-//list.addEventListener('click', (e) => {
-//    // CHECK AND SEE IF THE DELETE BUTTON WAS CLICKED
-//    if (e.target.classList.contains('delete')) {
-//        // DISPLAY CONFIRMATION OF THE DELETE TO THE USER
-//        if (confirm('Are you sure you want to delete this task?')) {
-//            // REMOVE THE SELECTED LI
-//            list.removeChild(e.target.parentElement)
-//            // CHECK TO SEE IF THE 'NO TASKS' MESSAGE SHOULD BE DISPLAYED
-//            checkMessageDisplay()
-//        }
-//    }
-//})
+function deleteRow(element) {
+    if (confirm('Are you sure you want to delete this employee?')) {
+        let currentRow = element.parentNode.parentNode.rowIndex;
+        employees.deleteRow(currentRow);
+        // DECREMENT THE NUMBER OF EMPLOYEES IN THE TABLE
+        empCounter--;
+        updateCounter();
+    }
+}
